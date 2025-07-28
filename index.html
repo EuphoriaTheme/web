@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Euphoria Development</title>
+  <link rel="icon" type="image/x-icon" href="/public/images/euphoria.ico">
+  <link rel="apple-touch-icon" href="/public/images/euphoria.ico">
+  <link href="/public/css/output.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="/public/js/contributors.js" defer></script>
+  <script src="/public/js/donators.js" defer></script>
+  <script src="/public/js/stats.js" defer></script>
+  <script src="/public/js/products.js" defer></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3 { font-family: 'Inter', sans-serif; }
+    
+    /* Glass morphism effects */
+    .glass {
+      background: rgba(23, 23, 23, 0.25);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    
+    .glass-light {
+      background: rgba(38, 38, 38, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Animated gradient background */
+    .animated-gradient {
+      background: linear-gradient(270deg, #2563eb, #0ea5e9, #6366f1, #8b5cf6, #2563eb);
+      background-size: 400% 400%;
+      animation: gradientMove 8s ease infinite;
+      opacity: 0.15;
+    }
+    
+    @keyframes gradientMove {
+      0% {background-position:0% 50%}
+      50% {background-position:100% 50%}
+      100% {background-position:0% 50%}
+    }
+    
+    /* Floating animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .float-animation {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    /* Glowing border animation */
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+      50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 30px rgba(59, 130, 246, 0.4); }
+    }
+    
+    .glow-animation {
+      animation: glow 3s ease-in-out infinite;
+    }
+    
+    /* Fade in up animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .fade-in-up {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+    
+    /* Staggered animation delays */
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+    
+    /* Enhanced card hover effects */
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Mobile-friendly hover effects */
+    @media (max-width: 768px) {
+      .card-hover:hover {
+        transform: translateY(-4px) scale(1.01);
+      }
+    }
+    
+    /* Line clamp utility */
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    /* Mobile navigation improvements */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(23, 23, 23, 0.95);
+      backdrop-filter: blur(16px);
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      position: absolute;
+      top: 100%;
+      right: 0;
+      min-width: 200px;
+      z-index: 30;
+    }
+    
+    @media (max-width: 768px) {
+      .mobile-nav-hidden {
+        display: none;
+      }
+      
+      .mobile-menu {
+        display: flex;
+      }
+      
+      .mobile-menu.hidden {
+        display: none;
+      }
+    }
+    
+    /* Shimmer effect for loading */
+    @keyframes shimmer {
+      0% { background-position: -468px 0; }
+      100% { background-position: 468px 0; }
+    }
+    
+    .shimmer {
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      background-size: 468px 100%;
+      animation: shimmer 1.5s infinite;
+    }
+  </style>
+</head>
+<body class="bg-neutral-900 text-neutral-100 min-h-screen">
+  <!-- Navigation Bar -->
+  <nav class="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-2 sm:py-3 glass shadow-lg border-b border-neutral-800 sticky top-0 z-20 rounded-b-xl fade-in-up">
+    <div class="flex items-center space-x-2 sm:space-x-3 float-animation">
+      <img src="/public/images/euphoria.png" alt="Euphoria Development Logo" class="h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 rounded-full border border-neutral-700 glow-animation">
+      <span class="text-base sm:text-lg lg:text-xl font-bold tracking-wide text-neutral-200">Euphoria Development</span>
+    </div>
+    
+    <!-- Desktop Navigation -->
+    <ul class="hidden md:flex space-x-4 lg:space-x-6">
+      <li><a href="#hero" class="hover:text-blue-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Home</a></li>
+      <li><a href="#statistics" class="hover:text-blue-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Statistics</a></li>
+      <li><a href="#contributors" class="hover:text-blue-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Contributors</a></li>
+      <li><a href="#donators" class="hover:text-blue-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Donators</a></li>
+      <li><a href="#get-involved" class="hover:text-blue-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Get Involved</a></li>
+      <li><a href="#products" class="hover:text-blue-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Products</a></li>
+    </ul>
+    
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn" class="md:hidden p-1.5 sm:p-2 rounded-lg glass border border-neutral-700 hover:border-blue-400 transition-colors">
+      <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu hidden">
+      <a href="#hero" class="hover:text-blue-400 transition-all duration-300 font-medium">Home</a>
+      <a href="#statistics" class="hover:text-blue-400 transition-all duration-300 font-medium">Statistics</a>
+      <a href="#contributors" class="hover:text-blue-400 transition-all duration-300 font-medium">Contributors</a>
+      <a href="#donators" class="hover:text-blue-400 transition-all duration-300 font-medium">Donators</a>
+      <a href="#get-involved" class="hover:text-blue-400 transition-all duration-300 font-medium">Get Involved</a>
+      <a href="#products" class="hover:text-blue-400 transition-all duration-300 font-medium">Products</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero" class="relative flex flex-col items-center justify-center text-center py-20 sm:py-36 bg-neutral-900 overflow-hidden shadow-lg px-4">
+    <!-- Grid SVG Background -->
+    <svg class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
+      <defs>
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#2d3748" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid)" />
+    </svg>
+    <div class="absolute inset-0 animated-gradient"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-neutral-900/80"></div>
+    <div class="relative z-10 flex flex-col items-center max-w-4xl mx-auto">
+      <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-4 text-neutral-100 drop-shadow-lg fade-in-up delay-100">Welcome to Euphoria Development</h1>
+      <p class="text-base sm:text-lg md:text-2xl mb-8 max-w-2xl text-neutral-400 fade-in-up delay-200 px-4">Empowering developers to build the future with open collaboration, innovation, and community support.</p>
+      <a href="#products" class="px-6 sm:px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-500 hover:scale-110 transition-all duration-300 glow-animation fade-in-up delay-300 float-animation">Learn More</a>
+    </div>
+  </section>
+
+  <!-- Statistics Section -->
+  <section id="statistics" class="py-8 sm:py-16 glass-light border-y border-neutral-800 shadow px-4">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+      <div class="glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 flex items-center justify-between card-hover fade-in-up delay-100">
+        <div>
+          <div class="text-2xl sm:text-3xl font-bold text-blue-400" id="total-projects">9</div>
+          <div class="text-neutral-400 text-sm sm:text-base">Total Projects</div>
+        </div>
+        <div class="text-blue-400/20 text-3xl sm:text-4xl float-animation">📁</div>
+      </div>
+      <div class="glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 flex items-center justify-between card-hover fade-in-up delay-200">
+        <div>
+          <div class="text-2xl sm:text-3xl font-bold text-blue-400" id="api-calls">12,727</div>
+          <div class="text-neutral-400 text-sm sm:text-base">API Calls</div>
+        </div>
+        <div class="text-blue-400/20 text-3xl sm:text-4xl float-animation" style="animation-delay: 2s;">🔗</div>
+      </div>
+      <div class="glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 flex items-center justify-between card-hover fade-in-up delay-300 sm:col-span-2 md:col-span-1">
+        <div>
+          <div class="text-2xl sm:text-3xl font-bold text-blue-400" id="active-panels">1,275</div>
+          <div class="text-neutral-400 text-sm sm:text-base">Active Panels</div>
+        </div>
+        <div class="text-blue-400/20 text-3xl sm:text-4xl float-animation" style="animation-delay: 4s;">⚡</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contributors Section -->
+  <section id="contributors" class="py-8 sm:py-16 bg-neutral-900 my-4 sm:my-8 mx-2 sm:mx-4 shadow rounded-xl">
+    <div class="max-w-6xl mx-auto text-center px-4">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neutral-100 fade-in-up">Contributors</h2>
+      <div id="contributors-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <!-- Contributors will be loaded dynamically -->
+        <div class="flex items-center glass rounded-lg p-3 sm:p-4 shadow border border-neutral-800 card-hover shimmer">
+          <img src="https://placehold.co/48x48/444/fff?text=..." class="rounded-full mr-3 border border-blue-400 w-10 h-10 sm:w-12 sm:h-12 glow-animation" alt="Loading...">
+          <div class="text-left">
+            <div class="font-semibold text-neutral-200 text-sm sm:text-base">Loading...</div>
+            <div class="text-xs sm:text-sm text-neutral-400">Loading contributors...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Donators Section -->
+  <section id="donators" class="py-8 sm:py-16 glass-light border-y border-neutral-800 shadow px-4">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neutral-100 fade-in-up">Donators</h2>
+      <div id="donators-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <!-- Donators will be loaded dynamically -->
+        <div class="flex items-center glass rounded-lg p-3 sm:p-4 shadow border border-neutral-800 card-hover shimmer">
+          <img src="https://placehold.co/24x24/444/fff?text=..." class="rounded-full mr-3 border border-blue-400 w-5 h-5 sm:w-6 sm:h-6 glow-animation" alt="Loading...">
+          <div class="text-left">
+            <div class="font-semibold text-neutral-200 text-sm sm:text-base">Loading...</div>
+            <div class="text-xs sm:text-sm text-neutral-400">Loading donators...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Get Involved Section -->
+  <section id="get-involved" class="py-8 sm:py-16 bg-neutral-900 my-4 sm:my-8 mx-2 sm:mx-4 shadow rounded-xl">
+    <div class="max-w-4xl mx-auto text-center px-4">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neutral-100 fade-in-up">Get Involved</h2>
+      <p class="text-base sm:text-lg text-neutral-400 mb-8 sm:mb-12 max-w-2xl mx-auto fade-in-up delay-100">
+        Join our growing community and help shape the future of Pterodactyl development. 
+        There are many ways to get involved and support our mission.
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        <!-- Contribute -->
+        <div class="glass rounded-lg p-4 sm:p-6 border border-neutral-800 hover:border-blue-400 card-hover fade-in-up delay-100">
+          <div class="text-3xl sm:text-4xl mb-3 sm:mb-4 float-animation">💻</div>
+          <h3 class="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-neutral-200">Contribute Code</h3>
+          <p class="text-neutral-400 mb-3 sm:mb-4 text-sm">
+            Help improve our extensions and themes by contributing code, reporting bugs, or suggesting features.
+          </p>
+          <a href="https://github.com/EuphoriaTheme" target="_blank" 
+             class="inline-block px-3 sm:px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition-all duration-300 hover:scale-105 glow-animation">
+            View on GitHub
+          </a>
+        </div>
+
+        <!-- Discord -->
+        <div class="glass rounded-lg p-4 sm:p-6 border border-neutral-800 hover:border-purple-400 card-hover fade-in-up delay-200">
+          <div class="text-3xl sm:text-4xl mb-3 sm:mb-4 float-animation" style="animation-delay: 2s;">💬</div>
+          <h3 class="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-neutral-200">Join Discord</h3>
+          <p class="text-neutral-400 mb-3 sm:mb-4 text-sm">
+            Connect with our community, get support, share ideas, and stay updated on the latest developments.
+          </p>
+          <a href="https://discord.euphoriadevelopment.uk" target="_blank" 
+             class="inline-block px-3 sm:px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm transition-all duration-300 hover:scale-105 glow-animation">
+            Join Server
+          </a>
+        </div>
+
+        <!-- Support -->
+        <div class="glass rounded-lg p-4 sm:p-6 border border-neutral-800 hover:border-green-400 card-hover fade-in-up delay-300">
+          <div class="text-3xl sm:text-4xl mb-3 sm:mb-4 float-animation" style="animation-delay: 4s;">❤️</div>
+          <h3 class="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-neutral-200">Support Us</h3>
+          <p class="text-neutral-400 mb-3 sm:mb-4 text-sm">
+            Help us continue developing amazing tools by making a donation or purchasing our premium products.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-2 justify-center">
+            <a href="https://github.com/sponsors/RepGraphics" target="_blank" 
+               class="px-2 sm:px-3 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded text-xs transition-all duration-300 hover:scale-105 glow-animation">
+              GitHub Sponsors
+            </a>
+            <a href="https://paypal.me/repgraphics" target="_blank" 
+               class="px-2 sm:px-3 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded text-xs transition-all duration-300 hover:scale-105 glow-animation">
+              PayPal
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-8 sm:mt-12 p-4 sm:p-6 glass rounded-lg border border-neutral-800 fade-in-up delay-400">
+        <h4 class="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-neutral-200">Other Ways to Help</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm text-neutral-400">
+          <div class="fade-in-up delay-100">
+            <strong class="text-neutral-300">🌟 Leave Reviews:</strong> Rate our extensions on marketplaces
+          </div>
+          <div class="fade-in-up delay-200">
+            <strong class="text-neutral-300">📢 Spread the Word:</strong> Share our projects with others
+          </div>
+          <div class="fade-in-up delay-300">
+            <strong class="text-neutral-300">🐛 Report Issues:</strong> Help us improve by reporting bugs
+          </div>
+          <div class="fade-in-up delay-400">
+            <strong class="text-neutral-300">💡 Suggest Features:</strong> Share your ideas for new features
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product List Section -->
+  <section id="products" class="py-8 sm:py-16 bg-neutral-900 shadow rounded-t-xl px-4">
+    <div class="max-w-6xl mx-auto text-center">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neutral-100 fade-in-up">Our Products</h2>
+      <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <!-- Products will be loaded dynamically -->
+        <div class="glass rounded-lg shadow p-4 sm:p-6 flex flex-col items-center border border-neutral-800 shimmer">
+          <div class="w-12 h-12 sm:w-16 sm:h-16 bg-neutral-800 rounded-lg mb-3 sm:mb-4 animate-pulse"></div>
+          <div class="h-3 sm:h-4 bg-neutral-800 rounded w-20 sm:w-24 mb-2 animate-pulse"></div>
+          <div class="h-2 sm:h-3 bg-neutral-800 rounded w-24 sm:w-32 mb-3 sm:mb-4 animate-pulse"></div>
+          <div class="h-2 sm:h-3 bg-neutral-800 rounded w-12 sm:w-16 animate-pulse"></div>
+        </div>
+      </div>
+      <div class="mt-6 sm:mt-8 fade-in-up delay-200">
+        <a href="https://blueprint.zip/browse?author=repgraphics" target="_blank" class="px-4 sm:px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-500 transition-all duration-300 hover:scale-105 glow-animation float-animation text-sm sm:text-base">View All Extensions</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-6 sm:py-8 text-center text-neutral-400 border-t border-neutral-800 glass mt-4 sm:mt-8 shadow-inner rounded-t-xl fade-in-up px-4">
+    <div class="text-sm sm:text-base">© 2025 Euphoria Development. All rights reserved.</div>
+  </footer>
+
+  <script>
+    // Mobile menu functionality
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close mobile menu when clicking a link
+    mobileMenu.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A') {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
