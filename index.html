@@ -3,40 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Euphoria Development</title>
+  <meta name="description" content="Blueprint extensions for Pterodactyl Panel and open-source Minecraft server plugins for Endstone.">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Euphoria Development | Blueprints & Minecraft Plugins</title>
   <link rel="icon" type="image/x-icon" href="/public/images/euphoria.ico">
   <link rel="apple-touch-icon" href="/public/images/euphoria.ico">
   <link href="/public/css/output.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <script src="/public/js/contributors.js" defer></script>
   <script src="/public/js/donators.js" defer></script>
   <script src="/public/js/stats.js" defer></script>
   <script src="/public/js/products.js" defer></script>
+  <script src="/public/js/endstone-plugins.js" defer></script>
   <style>
     html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; }
-    h1, h2, h3 { font-family: 'Inter', sans-serif; }
+    body { font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; }
+    h1, h2, h3 { font-family: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; letter-spacing: -0.02em; }
     
     /* Glass morphism effects */
     .glass {
       background: rgba(23, 23, 23, 0.25);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
     }
     
     .glass-light {
       background: rgba(38, 38, 38, 0.3);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     /* Animated gradient background */
     .animated-gradient {
-      background: linear-gradient(270deg, #2563eb, #0ea5e9, #6366f1, #8b5cf6, #2563eb);
+      background: linear-gradient(270deg, #2563eb, #0ea5e9, #10b981, #6366f1, #2563eb);
       background-size: 400% 400%;
       animation: gradientMove 8s ease infinite;
       opacity: 0.15;
@@ -87,7 +88,9 @@
     /* Staggered animation delays */
     .delay-100 { animation-delay: 0.1s; }
     .delay-200 { animation-delay: 0.2s; }
+    .delay-250 { animation-delay: 0.25s; }
     .delay-300 { animation-delay: 0.3s; }
+    .delay-350 { animation-delay: 0.35s; }
     .delay-400 { animation-delay: 0.4s; }
     
     /* Enhanced card hover effects */
@@ -122,10 +125,10 @@
       flex-direction: column;
       gap: 1rem;
       padding: 1rem;
-      background: rgba(23, 23, 23, 0.95);
+      background: rgba(23, 23, 23, 0.75);
       backdrop-filter: blur(16px);
       border-radius: 0.75rem;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(38, 38, 38, 0.9);
       position: absolute;
       top: 100%;
       right: 0;
@@ -158,11 +161,39 @@
       background-size: 468px 100%;
       animation: shimmer 1.5s infinite;
     }
+
+    :focus-visible {
+      outline: 2px solid rgba(96, 165, 250, 0.7);
+      outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+
+      .animated-gradient,
+      .fade-in-up,
+      .float-animation,
+      .glow-animation,
+      .shimmer {
+        animation: none !important;
+      }
+
+      .card-hover {
+        transition: none !important;
+      }
+
+      .card-hover:hover {
+        transform: none !important;
+      }
+    }
   </style>
 </head>
-<body class="bg-neutral-900 text-neutral-100 min-h-screen">
+<body class="bg-neutral-950 text-neutral-100 min-h-screen">
+  <a href="#hero" class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-3 focus:py-2 focus:rounded-lg focus:bg-neutral-950 focus:text-neutral-100 focus:border focus:border-blue-400">
+    Skip to content
+  </a>
   <!-- Navigation Bar -->
-  <nav class="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-2 sm:py-3 glass shadow-lg border-b border-neutral-800 sticky top-0 z-20 rounded-b-xl fade-in-up">
+  <nav aria-label="Primary" class="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-2 sm:py-3 glass shadow-lg border-b border-neutral-800 sticky top-0 z-20 rounded-b-xl fade-in-up">
     <div class="flex items-center space-x-2 sm:space-x-3 float-animation">
       <img src="/public/images/euphoria.png" alt="Euphoria Development Logo" class="h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 rounded-full border border-neutral-700 glow-animation">
       <span class="text-base sm:text-lg lg:text-xl font-bold tracking-wide text-neutral-200">Euphoria Development</span>
@@ -170,16 +201,19 @@
     
     <!-- Desktop Navigation -->
     <ul class="hidden md:flex space-x-4 lg:space-x-6">
-      <li><a href="#hero" class="hover:text-blue-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Home</a></li>
-      <li><a href="#contributors" class="hover:text-blue-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Contributors</a></li>
-      <li><a href="#donators" class="hover:text-blue-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Donators</a></li>
-      <li><a href="#get-involved" class="hover:text-blue-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Get Involved</a></li>
-      <li><a href="#products" class="hover:text-blue-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Products</a></li>
-      <li><a href="https://status.euphoriadevelopment.uk" target="_blank" class="hover:text-green-400 transition-all duration-300 font-medium hover:scale-105 text-sm lg:text-base">Status</a></li>
+      <li><a href="#hero" class="hover:text-blue-300 transition-colors font-medium text-sm lg:text-base">Home</a></li>
+      <li><a href="#statistics" class="hover:text-blue-300 transition-colors font-medium text-sm lg:text-base">Statistics</a></li>
+      <li><a href="#contributors" class="hover:text-blue-300 transition-colors font-medium text-sm lg:text-base">Contributors</a></li>
+      <li><a href="#donators" class="hover:text-blue-300 transition-colors font-medium text-sm lg:text-base">Donators</a></li>
+      <li><a href="#get-involved" class="hover:text-blue-300 transition-colors font-medium text-sm lg:text-base">Get Involved</a></li>
+      <li><a href="#products" class="hover:text-blue-300 transition-colors font-medium text-sm lg:text-base">Blueprints</a></li>
+      <li><a href="#apps" class="hover:text-blue-300 transition-colors font-medium text-sm lg:text-base">Web Apps</a></li>
+      <li><a href="#endstone" class="hover:text-emerald-300 transition-colors font-medium text-sm lg:text-base">Minecraft Plugins</a></li>
+      <li><a href="https://status.euphoriadevelopment.uk/status/euphoria" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-300 transition-colors font-medium text-sm lg:text-base">Status</a></li>
     </ul>
     
     <!-- Mobile Menu Button -->
-    <button id="mobile-menu-btn" class="md:hidden p-1.5 sm:p-2 rounded-lg glass border border-neutral-700 hover:border-blue-400 transition-colors">
+    <button id="mobile-menu-btn" aria-controls="mobile-menu" aria-expanded="false" aria-label="Open navigation menu" class="md:hidden p-1.5 sm:p-2 rounded-lg glass border border-neutral-700 hover:border-blue-400 transition-colors">
       <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
       </svg>
@@ -187,18 +221,20 @@
     
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="mobile-menu hidden">
-      <a href="#hero" class="hover:text-blue-400 transition-all duration-300 font-medium">Home</a>
-      <a href="#statistics" class="hover:text-blue-400 transition-all duration-300 font-medium">Statistics</a>
-      <a href="#contributors" class="hover:text-blue-400 transition-all duration-300 font-medium">Contributors</a>
-      <a href="#donators" class="hover:text-blue-400 transition-all duration-300 font-medium">Donators</a>
-      <a href="#get-involved" class="hover:text-blue-400 transition-all duration-300 font-medium">Get Involved</a>
-      <a href="#products" class="hover:text-blue-400 transition-all duration-300 font-medium">Products</a>
-      <a href="https://status.euphoriadevelopment.uk" target="_blank" class="hover:text-green-400 transition-all duration-300 font-medium">Status</a>
+      <a href="#hero" class="hover:text-blue-300 transition-colors font-medium">Home</a>
+      <a href="#statistics" class="hover:text-blue-300 transition-colors font-medium">Statistics</a>
+      <a href="#contributors" class="hover:text-blue-300 transition-colors font-medium">Contributors</a>
+      <a href="#donators" class="hover:text-blue-300 transition-colors font-medium">Donators</a>
+      <a href="#get-involved" class="hover:text-blue-300 transition-colors font-medium">Get Involved</a>
+      <a href="#products" class="hover:text-blue-300 transition-colors font-medium">Blueprints</a>
+      <a href="#apps" class="hover:text-blue-300 transition-colors font-medium">Web Apps</a>
+      <a href="#endstone" class="hover:text-emerald-300 transition-colors font-medium">Minecraft Plugins</a>
+      <a href="https://status.euphoriadevelopment.uk/status/euphoria" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-300 transition-colors font-medium">Status</a>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <section id="hero" class="relative flex flex-col items-center justify-center text-center py-20 sm:py-36 bg-neutral-900 overflow-hidden shadow-lg px-4">
+  <section id="hero" class="relative flex flex-col items-center justify-center text-center py-20 sm:py-36 bg-neutral-950 overflow-hidden shadow-lg px-4">
     <!-- Grid SVG Background -->
     <svg class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
       <defs>
@@ -209,11 +245,11 @@
       <rect width="100%" height="100%" fill="url(#grid)" />
     </svg>
     <div class="absolute inset-0 animated-gradient"></div>
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-neutral-900/80"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-neutral-950/80"></div>
     <div class="relative z-10 flex flex-col items-center max-w-4xl mx-auto">
       <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-4 text-neutral-100 drop-shadow-lg fade-in-up delay-100">Welcome to Euphoria Development</h1>
-      <p class="text-base sm:text-lg md:text-2xl mb-8 max-w-2xl text-neutral-400 fade-in-up delay-200 px-4">Empowering developers to build the future with open collaboration, innovation, and community support.</p>
-      <a href="#products" class="px-6 sm:px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-500 hover:scale-110 transition-all duration-300 glow-animation fade-in-up delay-300 float-animation">Learn More</a>
+      <p class="text-base sm:text-lg md:text-2xl mb-8 max-w-2xl text-neutral-400 fade-in-up delay-200 px-4">Blueprint-powered themes and extensions for Pterodactyl Panel, plus open-source Endstone plugins for Minecraft servers.</p>
+      <a href="#products" class="inline-flex items-center justify-center px-6 sm:px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-500 transition-colors fade-in-up delay-300">Browse Blueprints</a>
     </div>
   </section>
 
@@ -225,28 +261,40 @@
           <div class="text-2xl sm:text-3xl font-bold text-blue-400" id="total-projects">9</div>
           <div class="text-neutral-400 text-sm sm:text-base">Total Projects</div>
         </div>
-        <div class="text-blue-400/20 text-3xl sm:text-4xl float-animation">📁</div>
+        <div class="text-blue-400/20 float-animation" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 sm:w-11 sm:h-11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V6.75A2.25 2.25 0 0 1 4.5 4.5h5.379c.597 0 1.17.237 1.591.659l1.122 1.122c.42.421.993.659 1.59.659H19.5A2.25 2.25 0 0 1 21.75 9v8.25A2.25 2.25 0 0 1 19.5 19.5h-15a2.25 2.25 0 0 1-2.25-2.25v-4.5Z" />
+          </svg>
+        </div>
       </div>
       <div class="glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 flex items-center justify-between card-hover fade-in-up delay-200">
         <div>
           <div class="text-2xl sm:text-3xl font-bold text-blue-400" id="api-calls">12,727</div>
           <div class="text-neutral-400 text-sm sm:text-base">API Calls</div>
         </div>
-        <div class="text-blue-400/20 text-3xl sm:text-4xl float-animation" style="animation-delay: 2s;">🔗</div>
+        <div class="text-blue-400/20 float-animation" style="animation-delay: 2s;" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 sm:w-11 sm:h-11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 6.364 6.364l-3.375 3.375a4.5 4.5 0 0 1-6.364-6.364m3.536-3.536a4.5 4.5 0 0 0-6.364 0L3.616 11.25a4.5 4.5 0 0 0 6.364 6.364l1.125-1.125" />
+          </svg>
+        </div>
       </div>
       <div class="glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 flex items-center justify-between card-hover fade-in-up delay-300 sm:col-span-2 md:col-span-1">
         <div>
           <div class="text-2xl sm:text-3xl font-bold text-blue-400" id="active-panels">1,275</div>
           <div class="text-neutral-400 text-sm sm:text-base">Active Panels</div>
         </div>
-        <div class="text-blue-400/20 text-3xl sm:text-4xl float-animation" style="animation-delay: 4s;">⚡</div>
+        <div class="text-blue-400/20 float-animation" style="animation-delay: 4s;" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 sm:w-11 sm:h-11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5 10.5 3v7.5h9.75L13.5 21v-7.5H3.75Z" />
+          </svg>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Contributors Section -->
-  <section id="contributors" class="py-8 sm:py-16 bg-neutral-900 my-4 sm:my-8 mx-2 sm:mx-4 shadow rounded-xl">
-    <div class="max-w-6xl mx-auto text-center px-4">
+  <section id="contributors" class="py-8 sm:py-16 bg-neutral-900 shadow px-4">
+    <div class="max-w-6xl mx-auto text-center">
       <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neutral-100 fade-in-up">Contributors</h2>
       <div id="contributors-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
         <!-- Contributors will be loaded dynamically -->
@@ -279,133 +327,283 @@
   </section>
 
   <!-- Get Involved Section -->
-  <section id="get-involved" class="py-8 sm:py-16 bg-neutral-900 my-4 sm:my-8 mx-2 sm:mx-4 shadow rounded-xl">
-    <div class="max-w-4xl mx-auto text-center px-4">
+  <section id="get-involved" class="py-8 sm:py-16 bg-neutral-900 shadow px-4">
+    <div class="max-w-4xl mx-auto text-center">
       <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neutral-100 fade-in-up">Get Involved</h2>
       <p class="text-base sm:text-lg text-neutral-400 mb-8 sm:mb-12 max-w-2xl mx-auto fade-in-up delay-100">
-        Join our growing community and help shape the future of Pterodactyl development. 
+        Join our growing community and help shape the future of development. 
         There are many ways to get involved and support our mission.
       </p>
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
         <!-- Contribute -->
         <div class="glass rounded-lg p-4 sm:p-6 border border-neutral-800 hover:border-blue-400 card-hover fade-in-up delay-100">
-          <div class="text-3xl sm:text-4xl mb-3 sm:mb-4 float-animation">💻</div>
+          <div class="text-blue-400/20 mb-3 sm:mb-4 float-animation" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 sm:w-12 sm:h-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m17.25 6.75 3.75 5.25-3.75 5.25M6.75 17.25 3 12l3.75-5.25M14.25 4.5l-4.5 15" />
+            </svg>
+          </div>
           <h3 class="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-neutral-200">Contribute Code</h3>
           <p class="text-neutral-400 mb-3 sm:mb-4 text-sm">
             Help improve our extensions and themes by contributing code, reporting bugs, or suggesting features.
           </p>
-          <a href="https://github.com/EuphoriaTheme" target="_blank" 
-             class="inline-block px-3 sm:px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition-all duration-300 hover:scale-105 glow-animation">
+          <a href="https://github.com/EuphoriaTheme" target="_blank" rel="noopener noreferrer" 
+             class="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-100 text-sm font-semibold transition-colors border border-neutral-700">
             View on GitHub
           </a>
         </div>
 
         <!-- Discord -->
         <div class="glass rounded-lg p-4 sm:p-6 border border-neutral-800 hover:border-purple-400 card-hover fade-in-up delay-200">
-          <div class="text-3xl sm:text-4xl mb-3 sm:mb-4 float-animation" style="animation-delay: 2s;">💬</div>
+          <div class="text-purple-400/20 mb-3 sm:mb-4 float-animation" style="animation-delay: 2s;" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 sm:w-12 sm:h-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.004-.658 1.89-1.62 2.203a24.37 24.37 0 0 1-8.66 1.498 24.37 24.37 0 0 1-8.66-1.498A2.25 2.25 0 0 1 2.25 14.894V10.61c0-.97.616-1.813 1.5-2.097A24.37 24.37 0 0 1 12 7.113c2.967 0 5.824.53 8.25 1.398Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12.75h.008v.008H6.75v-.008Zm3.75 0h.008v.008H10.5v-.008Zm3.75 0h.008v.008h-.008v-.008Z" />
+            </svg>
+          </div>
           <h3 class="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-neutral-200">Join Discord</h3>
           <p class="text-neutral-400 mb-3 sm:mb-4 text-sm">
             Connect with our community, get support, share ideas, and stay updated on the latest developments.
           </p>
-          <a href="https://discord.euphoriadevelopment.uk" target="_blank" 
-             class="inline-block px-3 sm:px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm transition-all duration-300 hover:scale-105 glow-animation">
+          <a href="https://discord.euphoriadevelopment.uk" target="_blank" rel="noopener noreferrer" 
+             class="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold transition-colors">
             Join Server
           </a>
         </div>
 
         <!-- Status Page -->
         <div class="glass rounded-lg p-4 sm:p-6 border border-neutral-800 hover:border-green-400 card-hover fade-in-up delay-250">
-          <div class="text-3xl sm:text-4xl mb-3 sm:mb-4 float-animation" style="animation-delay: 3s;">📊</div>
+          <div class="text-green-400/20 mb-3 sm:mb-4 float-animation" style="animation-delay: 3s;" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 sm:w-12 sm:h-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 15.75v-6m4.5 6V6.75m4.5 9v-3.75" />
+            </svg>
+          </div>
           <h3 class="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-neutral-200">Service Status</h3>
           <p class="text-neutral-400 mb-3 sm:mb-4 text-sm">
             Check the real-time status of our services and stay informed about any maintenance or outages.
           </p>
-          <a href="https://status.euphoriadevelopment.uk" target="_blank" 
-             class="inline-block px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm transition-all duration-300 hover:scale-105 glow-animation">
+          <a href="https://status.euphoriadevelopment.uk/status/euphoria" target="_blank" rel="noopener noreferrer" 
+             class="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-colors">
             View Status
           </a>
         </div>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mt-6 sm:mt-8">
+      <div class="grid grid-cols-1 md:grid-cols-1 gap-6 sm:gap-8 mt-6 sm:mt-8">
         <!-- Support -->
         <div class="glass rounded-lg p-4 sm:p-6 border border-neutral-800 hover:border-pink-400 card-hover fade-in-up delay-300">
-          <div class="text-3xl sm:text-4xl mb-3 sm:mb-4 float-animation" style="animation-delay: 4s;">❤️</div>
+          <div class="text-pink-400/20 mb-3 sm:mb-4 float-animation" style="animation-delay: 4s;" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 sm:w-12 sm:h-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.5-4.5-1.74 0-3.41.81-4.5 2.09-1.09-1.28-2.76-2.09-4.5-2.09-2.4 0-4.5 2.015-4.5 4.5 0 7.22 9 12.75 9 12.75s9-5.53 9-12.75Z" />
+            </svg>
+          </div>
           <h3 class="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-neutral-200">Support Us</h3>
           <p class="text-neutral-400 mb-3 sm:mb-4 text-sm">
             Help us continue developing amazing tools by making a donation or purchasing our premium products.
           </p>
           <div class="flex flex-col sm:flex-row gap-2 justify-center">
-            <a href="https://github.com/sponsors/RepGraphics" target="_blank" 
-               class="px-2 sm:px-3 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded text-xs transition-all duration-300 hover:scale-105 glow-animation">
+            <a href="https://github.com/sponsors/RepGraphics" target="_blank" rel="noopener noreferrer" 
+               class="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-pink-600 hover:bg-pink-500 text-white text-sm font-semibold transition-colors">
               GitHub Sponsors
             </a>
-            <a href="https://paypal.me/repgraphics" target="_blank" 
-               class="px-2 sm:px-3 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded text-xs transition-all duration-300 hover:scale-105 glow-animation">
+            <a href="https://paypal.me/repgraphics" target="_blank" rel="noopener noreferrer" 
+               class="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-semibold transition-colors">
               PayPal
             </a>
           </div>
         </div>
-
-        <!-- Community -->
-        <div class="glass rounded-lg p-4 sm:p-6 border border-neutral-800 hover:border-blue-400 card-hover fade-in-up delay-350">
-          <div class="text-3xl sm:text-4xl mb-3 sm:mb-4 float-animation" style="animation-delay: 5s;">🌟</div>
-          <h3 class="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-neutral-200">Community</h3>
-          <p class="text-neutral-400 mb-3 sm:mb-4 text-sm">
-            Join our vibrant community of developers and creators building the future together.
-          </p>
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <div class="text-neutral-300">🌟 Leave Reviews</div>
-            <div class="text-neutral-300">📢 Spread the Word</div>
-            <div class="text-neutral-300">🐛 Report Issues</div>
-            <div class="text-neutral-300">💡 Suggest Features</div>
-          </div>
-        </div>
       </div>
       
-      <div class="mt-8 sm:mt-12 p-4 sm:p-6 glass rounded-lg border border-neutral-800 fade-in-up delay-400">
-        <h4 class="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-neutral-200">Quick Links</h4>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm text-neutral-400">
-          <div class="fade-in-up delay-100">
-            <strong class="text-neutral-300">📊 Service Status:</strong> 
-            <a href="https://status.euphoriadevelopment.uk" target="_blank" class="text-green-400 hover:text-green-300 transition-colors">Check uptime & health</a>
-          </div>
-          <div class="fade-in-up delay-200">
-            <strong class="text-neutral-300">📢 Announcements:</strong> Stay updated on Discord
-          </div>
-          <div class="fade-in-up delay-300">
-            <strong class="text-neutral-300">🐛 Report Issues:</strong> Help us improve by reporting bugs
-          </div>
-          <div class="fade-in-up delay-400">
-            <strong class="text-neutral-300">💡 Suggest Features:</strong> Share your ideas for new features
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
   <!-- Product List Section -->
-  <section id="products" class="py-8 sm:py-16 bg-neutral-900 shadow rounded-t-xl px-4">
+  <section id="products" class="py-8 sm:py-16 bg-neutral-900 shadow px-4">
     <div class="max-w-6xl mx-auto text-center">
-      <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neutral-100 fade-in-up">Our Products</h2>
-      <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        <!-- Products will be loaded dynamically -->
-        <div class="glass rounded-lg shadow p-4 sm:p-6 flex flex-col items-center border border-neutral-800 shimmer">
-          <div class="w-12 h-12 sm:w-16 sm:h-16 bg-neutral-800 rounded-lg mb-3 sm:mb-4 animate-pulse"></div>
-          <div class="h-3 sm:h-4 bg-neutral-800 rounded w-20 sm:w-24 mb-2 animate-pulse"></div>
-          <div class="h-2 sm:h-3 bg-neutral-800 rounded w-24 sm:w-32 mb-3 sm:mb-4 animate-pulse"></div>
-          <div class="h-2 sm:h-3 bg-neutral-800 rounded w-12 sm:w-16 animate-pulse"></div>
+      <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-neutral-100 fade-in-up">Pterodactyl Blueprints</h2>
+      <p class="text-neutral-400 text-sm sm:text-base mb-6 sm:mb-8 max-w-2xl mx-auto fade-in-up delay-100">
+        Themes and extensions for Pterodactyl Panel, powered by Blueprint.
+      </p>
+      <div class="grid gap-10 sm:gap-12 text-left">
+        <div class="fade-in-up delay-150">
+          <h3 class="text-lg sm:text-xl font-semibold text-neutral-100">
+            Blueprint Addons
+            <span class="text-neutral-400 font-normal text-sm sm:text-base">(<span id="blueprint-addon-count">...</span>)</span>
+          </h3>
+          <p class="text-neutral-400 text-sm mt-1 max-w-2xl">
+            Extensions that add features and quality-of-life improvements to the panel.
+          </p>
+
+          <div id="blueprint-addons-grid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <!-- Addons will be loaded dynamically -->
+            <div class="glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 shimmer">
+              <div class="h-32 bg-neutral-800 rounded-lg mb-4 animate-pulse"></div>
+              <div class="h-4 bg-neutral-800 rounded w-40 mb-3 animate-pulse"></div>
+              <div class="h-3 bg-neutral-800 rounded w-full mb-2 animate-pulse"></div>
+              <div class="h-3 bg-neutral-800 rounded w-4/5 mb-4 animate-pulse"></div>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <div class="h-6 bg-neutral-800 rounded w-16 animate-pulse"></div>
+                <div class="h-6 bg-neutral-800 rounded w-20 animate-pulse"></div>
+                <div class="h-6 bg-neutral-800 rounded w-24 animate-pulse"></div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div class="h-10 bg-neutral-800 rounded animate-pulse"></div>
+                <div class="h-10 bg-neutral-800 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <div class="fade-in-up delay-200">
+          <h3 class="text-lg sm:text-xl font-semibold text-neutral-100">
+            Blueprint Themes
+            <span class="text-neutral-400 font-normal text-sm sm:text-base">(<span id="blueprint-theme-count">...</span>)</span>
+          </h3>
+          <p class="text-neutral-400 text-sm mt-1 max-w-2xl">
+            Full UI themes that change the look and feel of the panel.
+          </p>
+
+          <div id="blueprint-themes-grid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <!-- Themes will be loaded dynamically -->
+            <div class="glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 shimmer">
+              <div class="h-32 bg-neutral-800 rounded-lg mb-4 animate-pulse"></div>
+              <div class="h-4 bg-neutral-800 rounded w-40 mb-3 animate-pulse"></div>
+              <div class="h-3 bg-neutral-800 rounded w-full mb-2 animate-pulse"></div>
+              <div class="h-3 bg-neutral-800 rounded w-4/5 mb-4 animate-pulse"></div>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <div class="h-6 bg-neutral-800 rounded w-16 animate-pulse"></div>
+                <div class="h-6 bg-neutral-800 rounded w-20 animate-pulse"></div>
+                <div class="h-6 bg-neutral-800 rounded w-24 animate-pulse"></div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div class="h-10 bg-neutral-800 rounded animate-pulse"></div>
+                <div class="h-10 bg-neutral-800 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="blueprint-products-note" class="text-center text-neutral-400 text-sm"></div>
       </div>
       <div class="mt-6 sm:mt-8 fade-in-up delay-200">
-        <a href="https://blueprint.zip/browse?author=repgraphics" target="_blank" class="px-4 sm:px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-500 transition-all duration-300 hover:scale-105 glow-animation float-animation text-sm sm:text-base">Browse All Blueprint Extensions</a>
+        <a href="https://blueprint.zip/browse?author=repgraphics" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-500 transition-colors text-sm sm:text-base">Browse All Blueprints</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Web Applications Section -->
+  <section id="apps" class="py-8 sm:py-16 glass-light border-y border-neutral-800 border-b-0 shadow px-4">
+    <div class="max-w-6xl mx-auto text-center">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-neutral-100 fade-in-up">Web Applications</h2>
+      <p class="text-neutral-400 text-sm sm:text-base mb-6 sm:mb-8 max-w-2xl mx-auto fade-in-up delay-100">
+        A few web apps and tools I've built and maintain.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <article class="glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 card-hover text-left">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h3 class="text-lg sm:text-xl font-semibold text-neutral-100 truncate">Euphoria Paste</h3>
+              <p class="text-neutral-400 text-sm mt-1 line-clamp-2">Paid version of Euphoria Paste on BuiltByBit.</p>
+            </div>
+            <span class="shrink-0 text-xs px-2 py-1 rounded-full bg-yellow-600/15 text-yellow-500 border border-yellow-500/20">
+              Paid
+            </span>
+          </div>
+
+          <div class="mt-4 flex flex-col sm:flex-row gap-2">
+            <a href="https://builtbybit.com/resources/euphoria-paste.57974/" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-semibold transition-colors">
+              View Paid Version
+            </a>
+          </div>
+        </article>
+
+        <article class="glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 card-hover text-left">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h3 class="text-lg sm:text-xl font-semibold text-neutral-100 truncate">Euphoria Paste (Open Source)</h3>
+              <p class="text-neutral-400 text-sm mt-1 line-clamp-2">Open source fork of Haste, a pastebin written for Node.js.</p>
+            </div>
+            <span class="shrink-0 text-xs px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">
+              Open Source
+            </span>
+          </div>
+
+          <div class="mt-4 flex flex-col sm:flex-row gap-2">
+            <a href="https://github.com/RepGraphics/euphoria-paste" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-100 text-sm font-semibold transition-colors border border-neutral-700">
+              View on GitHub
+            </a>
+          </div>
+        </article>
+
+        <article class="glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 card-hover text-left">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h3 class="text-lg sm:text-xl font-semibold text-neutral-100 truncate">Eventer</h3>
+              <p class="text-neutral-400 text-sm mt-1 line-clamp-2">Making scheduling easy.</p>
+            </div>
+            <span class="shrink-0 text-xs px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">
+              Open Source
+            </span>
+          </div>
+
+          <div class="mt-4 flex flex-col sm:flex-row gap-2">
+            <a href="https://github.com/RepGraphics/eventer" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-100 text-sm font-semibold transition-colors border border-neutral-700">
+              View on GitHub
+            </a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Endstone Plugins Section -->
+  <section id="endstone" class="py-8 sm:py-16 glass-light border-y border-neutral-800 shadow px-4">
+    <div class="max-w-6xl mx-auto text-center">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-neutral-100 fade-in-up">
+        Endstone Plugins
+        <span class="text-neutral-400 font-normal text-sm sm:text-base">(<span id="endstone-plugin-count">...</span>)</span>
+      </h2>
+      <p class="text-neutral-400 text-sm sm:text-base mb-6 sm:mb-8 max-w-2xl mx-auto fade-in-up delay-100">
+        Open-source Minecraft server plugins for Endstone by
+        <a href="https://github.com/RepGraphics" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-200 transition-colors">RepGraphics</a>,
+        maintained under
+        <a href="https://github.com/EuphoriaDevelopmentOrg" target="_blank" rel="noopener noreferrer" class="text-emerald-300 hover:text-emerald-200 transition-colors">EuphoriaDevelopmentOrg</a>.
+      </p>
+
+      <div id="endstone-plugins-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <!-- Plugins will be loaded dynamically -->
+        <div class="glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 shimmer">
+          <div class="h-4 bg-neutral-800 rounded w-40 mb-3 animate-pulse"></div>
+          <div class="h-3 bg-neutral-800 rounded w-full mb-2 animate-pulse"></div>
+          <div class="h-3 bg-neutral-800 rounded w-4/5 mb-4 animate-pulse"></div>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <div class="h-6 bg-neutral-800 rounded w-16 animate-pulse"></div>
+            <div class="h-6 bg-neutral-800 rounded w-14 animate-pulse"></div>
+            <div class="h-6 bg-neutral-800 rounded w-14 animate-pulse"></div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div class="h-10 bg-neutral-800 rounded animate-pulse"></div>
+            <div class="h-10 bg-neutral-800 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 sm:mt-8 fade-in-up delay-200">
+         <a href="https://github.com/EuphoriaDevelopmentOrg?tab=repositories&q=Endstone" target="_blank" rel="noopener noreferrer"
+            class="inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold shadow hover:bg-emerald-500 transition-colors text-sm sm:text-base">
+          Browse All Endstone Plugins on GitHub
+         </a>
       </div>
     </div>
   </section>
 
   <footer class="py-6 sm:py-8 text-center text-neutral-400 border-t border-neutral-800 glass mt-4 sm:mt-8 shadow-inner rounded-t-xl fade-in-up px-4">
-    <div class="text-sm sm:text-base">© 2025 Euphoria Development. All rights reserved.</div>
+    <div class="text-sm sm:text-base">&copy; 2026 Euphoria Development. All rights reserved.</div>
   </footer>
 
   <script>
@@ -413,22 +611,32 @@
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
 
+    function setMobileMenuOpen(isOpen) {
+      mobileMenu.classList.toggle('hidden', !isOpen);
+      mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
+    }
+
     mobileMenuBtn.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
+      setMobileMenuOpen(mobileMenu.classList.contains('hidden'));
     });
 
     // Close mobile menu when clicking a link
     mobileMenu.addEventListener('click', (e) => {
       if (e.target.tagName === 'A') {
-        mobileMenu.classList.add('hidden');
+        setMobileMenuOpen(false);
       }
     });
 
     // Close mobile menu when clicking outside
     document.addEventListener('click', (e) => {
       if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
-        mobileMenu.classList.add('hidden');
+        setMobileMenuOpen(false);
       }
+    });
+
+    // Close mobile menu on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false);
     });
   </script>
 </body>

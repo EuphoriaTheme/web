@@ -1,52 +1,219 @@
-// Fetch and display contributors from Euphoria Development API
-async function loadContributors() {
-    try {
-        const response = await fetch('https://api.euphoriadevelopment.uk/contributors');
-        const contributors = await response.json();
-        
-        const contributorsGrid = document.getElementById('contributors-grid');
-        
-        // Clear loading content
-        contributorsGrid.innerHTML = '';
-        
-        // Create contributor cards
-        contributors.forEach(contributor => {
-            const contributorCard = document.createElement('div');
-            contributorCard.className = 'flex items-center bg-neutral-950 rounded-lg p-4 shadow border border-neutral-800 hover:shadow-lg hover:border-blue-400 transition-all duration-200 cursor-pointer';
-            
-            contributorCard.innerHTML = `
-                <img src="${contributor.Image}" 
-                     class="rounded-full mr-3 border border-blue-400 w-12 h-12 object-cover" 
-                     alt="${contributor.Name}"
-                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(contributor.Name)}&background=3b82f6&color=fff&size=24'">
-                <div class="text-left flex-1">
-                    <div class="font-semibold text-neutral-200">${contributor.Name}</div>
-                    <div class="text-sm text-neutral-400 line-clamp-2">${contributor.Contribution}</div>
-                </div>
-            `;
-            
-            // Make card clickable if link exists
-            if (contributor.Link) {
-                contributorCard.addEventListener('click', () => {
-                    window.open(contributor.Link, '_blank');
-                });
-            }
-            
-            contributorsGrid.appendChild(contributorCard);
-        });
-        
-    } catch (error) {
-        console.error('Error fetching contributors:', error);
-        
-        // Fallback content on error
-        const contributorsGrid = document.getElementById('contributors-grid');
-        contributorsGrid.innerHTML = `
-            <div class="col-span-full text-center text-neutral-400">
-                <p>Unable to load contributors at this time.</p>
-            </div>
-        `;
-    }
-}
+// Fetch and display contributors from Euphoria Development API.
+(() => {
+  const API_URL = 'https://api.euphoriadevelopment.uk/contributors';
 
-// Load contributors when page loads
-document.addEventListener('DOMContentLoaded', loadContributors);
+  function escapeHtml(input) {
+    return String(input || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function safeUrl(url) {
+    if (!url) return null;
+    try {
+      const u = new URL(String(url), window.location.href);
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+      return u.href;
+    } catch {
+      return null;
+    }
+  }
+
+  function getGridColumnCount(grid) {
+    if (!grid) return 1;
+    const computed = window.getComputedStyle(grid);
+    const template = computed && computed.gridTemplateColumns ? String(computed.gridTemplateColumns) : '';
+    if (!template || template === 'none') return 1;
+
+    // Some browsers may still return repeat(...) here; handle it defensively.
+    const repeatMatch = template.match(/repeat\((\d+),/);
+    if (repeatMatch) {
+      const n = Number.parseInt(repeatMatch[1], 10);
+      return Number.isFinite(n) && n > 0 ? n : 1;
+    }
+
+    const cols = template.split(' ').filter(Boolean).length;
+    return Math.max(1, cols);
+  }
+
+  function ensureMoreToggle(grid, options = {}) {
+    if (!grid || !grid.id) return;
+
+    const rows = Number.isFinite(Number(options.rows)) ? Number(options.rows) : 1;
+    const moreLabel = options.moreLabel ? String(options.moreLabel) : 'More';
+    const lessLabel = options.lessLabel ? String(options.lessLabel) : 'Show less';
+
+    const items = Array.from(grid.children).filter((el) => el && el.nodeType === 1);
+    const columns = getGridColumnCount(grid);
+    const visibleCount = Math.max(1, columns * Math.max(1, rows));
+    const needsToggle = items.length > visibleCount;
+
+    const wrapperId = `${grid.id}-more-toggle`;
+    let wrapper = document.getElementById(wrapperId);
+
+    // If the grid doesn't need toggling, ensure everything is visible and hide/remove any existing toggle.
+    if (!needsToggle) {
+      items.forEach((el) => el.classList.remove('hidden'));
+      if (wrapper) wrapper.classList.add('hidden');
+      return;
+    }
+
+    if (!wrapper) {
+      wrapper = document.createElement('div');
+      wrapper.id = wrapperId;
+      wrapper.className = 'mt-4 flex justify-center';
+      wrapper.innerHTML = `
+        <button
+          type="button"
+          class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-100 text-sm font-semibold transition-colors border border-neutral-700"
+          aria-controls="${grid.id}"
+        >${moreLabel}</button>
+      `;
+      grid.insertAdjacentElement('afterend', wrapper);
+    }
+
+    const button = wrapper.querySelector('button');
+    if (!button) return;
+
+    const update = () => {
+      const freshItems = Array.from(grid.children).filter((el) => el && el.nodeType === 1);
+      const colsNow = getGridColumnCount(grid);
+      const visibleNow = Math.max(1, colsNow * Math.max(1, rows));
+      const expanded = grid.dataset.moreExpanded === '1';
+
+      if (freshItems.length <= visibleNow) {
+        freshItems.forEach((el) => el.classList.remove('hidden'));
+        wrapper.classList.add('hidden');
+        return;
+      }
+
+      wrapper.classList.remove('hidden');
+
+      if (expanded) {
+        freshItems.forEach((el) => el.classList.remove('hidden'));
+        button.textContent = lessLabel;
+        button.setAttribute('aria-expanded', 'true');
+        return;
+      }
+
+      freshItems.forEach((el, idx) => {
+        if (idx < visibleNow) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+      button.textContent = moreLabel;
+      button.setAttribute('aria-expanded', 'false');
+    };
+
+    if (!('moreExpanded' in grid.dataset)) grid.dataset.moreExpanded = '0'; // default collapsed
+
+    if (!button.dataset.moreBound) {
+      button.dataset.moreBound = '1';
+      button.addEventListener('click', () => {
+        grid.dataset.moreExpanded = grid.dataset.moreExpanded === '1' ? '0' : '1';
+        update();
+      });
+    }
+
+    if (!grid.dataset.moreResizeBound) {
+      grid.dataset.moreResizeBound = '1';
+      let raf = 0;
+      window.addEventListener('resize', () => {
+        // Only recompute the clamp while collapsed.
+        if (grid.dataset.moreExpanded === '1') return;
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(update);
+      });
+    }
+
+    update();
+  }
+
+  function createContributorCard(contributor) {
+    const name = contributor && contributor.Name ? String(contributor.Name) : 'Unknown';
+    const contribution = contributor && contributor.Contribution ? String(contributor.Contribution) : '';
+
+    const href = safeUrl(contributor && contributor.Link);
+    const imageUrl = safeUrl(contributor && contributor.Image);
+    const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff&size=96`;
+
+    const el = href ? document.createElement('a') : document.createElement('article');
+    if (href) {
+      el.href = href;
+      el.target = '_blank';
+      el.rel = 'noopener noreferrer';
+    }
+
+    el.className =
+      'glass rounded-lg p-4 sm:p-6 shadow border border-neutral-800 card-hover text-left';
+
+    el.innerHTML = `
+      <div class="flex items-start gap-3">
+        <img
+          src="${escapeHtml(imageUrl || fallbackAvatar)}"
+          alt="${escapeHtml(name)}"
+          class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-neutral-700 object-cover shrink-0"
+          loading="lazy"
+          decoding="async"
+          onerror="this.onerror=null;this.src='${fallbackAvatar}'"
+        >
+
+        <div class="min-w-0 flex-1">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="text-sm sm:text-base font-semibold text-neutral-100 truncate">${escapeHtml(name)}</h3>
+            <span class="shrink-0 text-xs px-2 py-1 rounded-full bg-blue-500/15 text-blue-300 border border-blue-500/20">
+              Contributor
+            </span>
+          </div>
+
+          ${
+            contribution
+              ? `<p class="text-neutral-400 text-sm mt-1 line-clamp-2">${escapeHtml(contribution)}</p>`
+              : `<p class="text-neutral-500 text-sm mt-1">Contributor</p>`
+          }
+        </div>
+      </div>
+    `;
+
+    return el;
+  }
+
+  async function loadContributors() {
+    const grid = document.getElementById('contributors-grid');
+    if (!grid) return;
+
+    try {
+      const response = await fetch(API_URL, { headers: { Accept: 'application/json' } });
+      const contributors = await response.json();
+
+      grid.innerHTML = '';
+
+      const items = Array.isArray(contributors) ? contributors : [];
+      if (!items.length) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center text-neutral-400">
+            <p>No contributors found yet.</p>
+          </div>
+        `;
+        return;
+      }
+
+      items.forEach((contributor) => {
+        grid.appendChild(createContributorCard(contributor));
+      });
+
+      ensureMoreToggle(grid);
+    } catch (error) {
+      console.error('Error fetching contributors:', error);
+      grid.innerHTML = `
+        <div class="col-span-full text-center text-neutral-400">
+          <p>Unable to load contributors at this time.</p>
+        </div>
+      `;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadContributors);
+})();
