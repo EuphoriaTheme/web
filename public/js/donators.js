@@ -22,6 +22,112 @@
     }
   }
 
+  function getGridColumnCount(grid) {
+    if (!grid) return 1;
+    const computed = window.getComputedStyle(grid);
+    const template = computed && computed.gridTemplateColumns ? String(computed.gridTemplateColumns) : '';
+    if (!template || template === 'none') return 1;
+
+    const repeatMatch = template.match(/repeat\((\d+),/);
+    if (repeatMatch) {
+      const n = Number.parseInt(repeatMatch[1], 10);
+      return Number.isFinite(n) && n > 0 ? n : 1;
+    }
+
+    const cols = template.split(' ').filter(Boolean).length;
+    return Math.max(1, cols);
+  }
+
+  function ensureMoreToggle(grid, options = {}) {
+    if (!grid || !grid.id) return;
+
+    const rows = Number.isFinite(Number(options.rows)) ? Number(options.rows) : 1;
+    const moreLabel = options.moreLabel ? String(options.moreLabel) : 'More';
+    const lessLabel = options.lessLabel ? String(options.lessLabel) : 'Show less';
+
+    const items = Array.from(grid.children).filter((el) => el && el.nodeType === 1);
+    const columns = getGridColumnCount(grid);
+    const visibleCount = Math.max(1, columns * Math.max(1, rows));
+    const needsToggle = items.length > visibleCount;
+
+    const wrapperId = `${grid.id}-more-toggle`;
+    let wrapper = document.getElementById(wrapperId);
+
+    if (!needsToggle) {
+      items.forEach((el) => el.classList.remove('hidden'));
+      if (wrapper) wrapper.classList.add('hidden');
+      return;
+    }
+
+    if (!wrapper) {
+      wrapper = document.createElement('div');
+      wrapper.id = wrapperId;
+      wrapper.className = 'mt-4 flex justify-center';
+      wrapper.innerHTML = `
+        <button
+          type="button"
+          class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-100 text-sm font-semibold transition-colors border border-neutral-700"
+          aria-controls="${grid.id}"
+        >${moreLabel}</button>
+      `;
+      grid.insertAdjacentElement('afterend', wrapper);
+    }
+
+    const button = wrapper.querySelector('button');
+    if (!button) return;
+
+    const update = () => {
+      const freshItems = Array.from(grid.children).filter((el) => el && el.nodeType === 1);
+      const colsNow = getGridColumnCount(grid);
+      const visibleNow = Math.max(1, colsNow * Math.max(1, rows));
+      const expanded = grid.dataset.moreExpanded === '1';
+
+      if (freshItems.length <= visibleNow) {
+        freshItems.forEach((el) => el.classList.remove('hidden'));
+        wrapper.classList.add('hidden');
+        return;
+      }
+
+      wrapper.classList.remove('hidden');
+
+      if (expanded) {
+        freshItems.forEach((el) => el.classList.remove('hidden'));
+        button.textContent = lessLabel;
+        button.setAttribute('aria-expanded', 'true');
+        return;
+      }
+
+      freshItems.forEach((el, idx) => {
+        if (idx < visibleNow) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+      button.textContent = moreLabel;
+      button.setAttribute('aria-expanded', 'false');
+    };
+
+    if (!('moreExpanded' in grid.dataset)) grid.dataset.moreExpanded = '0';
+
+    if (!button.dataset.moreBound) {
+      button.dataset.moreBound = '1';
+      button.addEventListener('click', () => {
+        grid.dataset.moreExpanded = grid.dataset.moreExpanded === '1' ? '0' : '1';
+        update();
+      });
+    }
+
+    if (!grid.dataset.moreResizeBound) {
+      grid.dataset.moreResizeBound = '1';
+      let raf = 0;
+      window.addEventListener('resize', () => {
+        if (grid.dataset.moreExpanded === '1') return;
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(update);
+      });
+    }
+
+    update();
+  }
+
   function createDonatorCard(donator) {
     const name = donator && donator.Name ? String(donator.Name) : 'Unknown';
     const donation = donator && donator.Donation ? String(donator.Donation) : '';
@@ -92,6 +198,8 @@
       items.forEach((donator) => {
         grid.appendChild(createDonatorCard(donator));
       });
+
+      ensureMoreToggle(grid);
     } catch (error) {
       console.error('Error fetching donators:', error);
       grid.innerHTML = `
