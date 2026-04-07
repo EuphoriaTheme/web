@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NitroCraft API endpoints for avatars, players, status, and tooling.">
+  <title>NitroCraft API | Euphoria Docs</title>
+  <link rel="icon" type="image/x-icon" href="/public/images/euphoria.ico">
+  <link rel="stylesheet" href="/public/css/docs.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body class="docs-page">
+  <header class="docs-topbar">
+    <div class="docs-topbar-inner">
+      <a class="docs-brand" href="/docs/"><img src="/public/images/euphoria.png" alt="Euphoria Development"><span>Euphoria Development Docs</span></a>
+      <nav class="docs-nav"><a href="/docs/">Home</a><a class="active" href="/docs/community/nitrocraft-api.html">NitroCraft API</a><a href="/index.html">Main Site</a></nav>
+    </div>
+  </header>
+
+  <main class="docs-shell">
+    <section class="docs-layout">
+      <aside class="docs-sidebar">
+        <h2>Community</h2>
+        <nav><a href="/docs/community/web-apps.html">Web Apps</a><a href="/docs/community/streamlink.html">StreamLink</a><a href="/docs/community/euphoria-licensing.html">Euphoria Licensing</a><a href="/docs/community/crafatar-api.html">Crafatar API</a><a href="/docs/community/crafatar-setup.html">Crafatar Setup</a><a class="active" href="/docs/community/nitrocraft-api.html">NitroCraft API</a><a href="/docs/community/nitrocraft-setup.html">NitroCraft Setup</a><a href="/docs/community/blueprint-addons.html">Blueprint Addons</a><a href="/docs/community/refresh-theme.html">Refresh Theme</a><a href="/docs/community/endstone-plugins.html">Endstone Plugins</a></nav>
+      </aside>
+
+      <div class="docs-content panel-grid">
+        <article class="panel">
+          <h2><i class="fa-solid fa-bolt" aria-hidden="true"></i> API Overview</h2>
+          <p><strong>NitroCraft</strong> is your full from-scratch remake built on Nitro and <code>minecraft-toolkit</code>, focused on performance and reliability.</p>
+          <p>Hosted base URL: <code>https://nitrocraft.uk</code></p>
+          <div class="callout"><p>Interactive OpenAPI docs are hosted at <code>/docs</code> and metrics at <code>/metrics</code>.</p></div>
+          <div class="doc-actions"><a class="text-link" href="https://nitrocraft.uk" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Open NitroCraft</a><a class="text-link" href="https://github.com/EuphoriaDevelopmentOrg/NitroCraft" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> Source Repository</a></div>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-solid fa-image" aria-hidden="true"></i> Avatar, Skin, and Renders</h2>
+          <ul>
+            <li><code>GET /avatars/{uuid}?size=160&amp;overlay</code></li>
+            <li><code>GET /skins/{uuid}</code></li>
+            <li><code>GET /capes/{uuid}</code></li>
+            <li><code>GET /renders/head/{uuid}?scale=6&amp;overlay</code></li>
+            <li><code>GET /renders/body/{uuid}?scale=6&amp;overlay</code></li>
+          </ul>
+          <pre><code>GET https://nitrocraft.uk/avatars/d634462bd663401d9788a8596307bc4d?size=100&amp;overlay
+GET https://nitrocraft.uk/renders/head/d634462bd663401d9788a8596307bc4d?scale=6&amp;overlay
+GET https://nitrocraft.uk/renders/body/d634462bd663401d9788a8596307bc4d?scale=6&amp;overlay</code></pre>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-solid fa-user" aria-hidden="true"></i> Player Lookup</h2>
+          <p>Player routes accept either a UUID or username and return profile-related data.</p>
+          <ul>
+            <li><code>GET /players/{uuid-or-username}</code></li>
+            <li><code>GET /players/{uuid-or-username}/profile</code></li>
+            <li><code>GET /players/{uuid-or-username}/history</code></li>
+            <li><code>GET /players/{uuid-or-username}/skin-metadata</code></li>
+          </ul>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-solid fa-server" aria-hidden="true"></i> Server Status Endpoints</h2>
+          <ul>
+            <li><code>GET /status/mc</code></li>
+            <li><code>GET /status/java?address=host</code></li>
+            <li><code>GET /status/bedrock?address=host</code></li>
+            <li><code>GET /status/server?address=host&amp;edition=auto</code></li>
+            <li><code>GET /status/browser?address=hostA&amp;address=hostB</code></li>
+            <li><code>GET /status/browser?source=my-directory&amp;source=another-directory</code></li>
+            <li><code>GET /status/icon?address=host</code></li>
+          </ul>
+          <div class="callout"><p><code>/status/browser</code> supports multi-target checks with concurrency limits and optional source-feed ingestion.</p></div>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-solid fa-code" aria-hidden="true"></i> Text and Tooling</h2>
+          <h3>Formatting</h3>
+          <ul>
+            <li><code>GET /format/html?text=...</code></li>
+            <li><code>GET /format/strip?text=...</code></li>
+            <li><code>GET /format/css</code></li>
+          </ul>
+          <h3>Tools and Meta</h3>
+          <ul>
+            <li><code>GET /tools/server-list</code></li>
+            <li><code>GET /tools/server-browser</code></li>
+            <li><code>GET /docs</code></li>
+            <li><code>GET /metrics</code></li>
+          </ul>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-solid fa-sliders" aria-hidden="true"></i> Common Configuration Impacting API</h2>
+          <ul>
+            <li><code>SESSIONS_RATE_LIMIT</code> controls outbound Mojang session request rate.</li>
+            <li><code>REQUESTS_RATE_LIMIT</code> and related settings control inbound per-IP limiting.</li>
+            <li><code>STATUS_ALLOW_PRIVATE_TARGETS</code> controls private/local target probing for status routes.</li>
+            <li><code>DEFAULT_REDIRECT_ALLOWLIST</code> controls allowed hosts for <code>default=</code> URL redirects.</li>
+            <li><code>CORS_ORIGIN</code> controls allowed browser origins.</li>
+          </ul>
+        </article>
+
+        <article class="panel">
+          <div class="doc-actions"><a class="text-link" href="/docs/community/web-apps.html"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Web Apps</a><a class="text-link" href="/docs/community/nitrocraft-setup.html">NitroCraft Setup <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="docs-footer"><div class="docs-footer-inner"><span>&copy; Euphoria Development</span><nav><a href="/docs/">Docs Home</a><a href="/legal/terms-and-conditions.html">Site Terms</a><a href="/legal/privacy-policy.html">Privacy Policy</a></nav></div></footer>
+</body>
+</html>

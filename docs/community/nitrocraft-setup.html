@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NitroCraft setup and deployment guide for local and production environments.">
+  <title>NitroCraft Setup | Euphoria Docs</title>
+  <link rel="icon" type="image/x-icon" href="/public/images/euphoria.ico">
+  <link rel="stylesheet" href="/public/css/docs.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body class="docs-page">
+  <header class="docs-topbar">
+    <div class="docs-topbar-inner">
+      <a class="docs-brand" href="/docs/"><img src="/public/images/euphoria.png" alt="Euphoria Development"><span>Euphoria Development Docs</span></a>
+      <nav class="docs-nav"><a href="/docs/">Home</a><a class="active" href="/docs/community/nitrocraft-setup.html">NitroCraft Setup</a><a href="/index.html">Main Site</a></nav>
+    </div>
+  </header>
+
+  <main class="docs-shell">
+    <section class="docs-layout">
+      <aside class="docs-sidebar">
+        <h2>Community</h2>
+        <nav><a href="/docs/community/web-apps.html">Web Apps</a><a href="/docs/community/streamlink.html">StreamLink</a><a href="/docs/community/euphoria-licensing.html">Euphoria Licensing</a><a href="/docs/community/crafatar-api.html">Crafatar API</a><a href="/docs/community/crafatar-setup.html">Crafatar Setup</a><a href="/docs/community/nitrocraft-api.html">NitroCraft API</a><a class="active" href="/docs/community/nitrocraft-setup.html">NitroCraft Setup</a><a href="/docs/community/blueprint-addons.html">Blueprint Addons</a><a href="/docs/community/refresh-theme.html">Refresh Theme</a><a href="/docs/community/endstone-plugins.html">Endstone Plugins</a></nav>
+      </aside>
+
+      <div class="docs-content panel-grid">
+        <article class="panel">
+          <h2><i class="fa-solid fa-rocket" aria-hidden="true"></i> Deployment Options</h2>
+          <ul>
+            <li><strong>Hosted:</strong> use <code>https://nitrocraft.uk</code> directly.</li>
+            <li><strong>Self-hosted:</strong> run locally with pnpm workflows, Docker Compose, or your own orchestration.</li>
+          </ul>
+          <div class="callout"><p>For route and parameter details, use <a href="/docs/community/nitrocraft-api.html">NitroCraft API Docs</a>.</p></div>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-solid fa-terminal" aria-hidden="true"></i> Local Development</h2>
+          <p>Recommended local workflow from repository scripts:</p>
+          <pre><code>corepack enable
+nvm use
+pnpm install
+pnpm dev</code></pre>
+          <p>Additional scripts:</p>
+          <pre><code>pnpm test
+pnpm lint</code></pre>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-solid fa-box" aria-hidden="true"></i> Build and Run Production Output</h2>
+          <pre><code>pnpm build
+pnpm start</code></pre>
+          <p>This runs the built Nitro output for production-style testing.</p>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-brands fa-docker" aria-hidden="true"></i> Docker Quick Start</h2>
+          <pre><code>cp .env.example .env
+docker compose up -d</code></pre>
+          <p>Useful follow-up:</p>
+          <pre><code>docker compose logs -f</code></pre>
+          <div class="callout"><p>Render endpoints require native <code>canvas</code> dependencies in the runtime image/environment.</p></div>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-solid fa-sliders" aria-hidden="true"></i> Key Environment Values</h2>
+          <ul>
+            <li><code>CACHE_BACKEND</code>: <code>redis</code>, <code>memory</code>, or <code>none</code>.</li>
+            <li><code>REDIS_URL</code>: Redis connection string when using Redis backend.</li>
+            <li><code>SESSIONS_RATE_LIMIT</code>: outbound Mojang session request limit.</li>
+            <li><code>REQUESTS_RATE_LIMIT</code> and related window/key/trust options for inbound limiting.</li>
+            <li><code>STATUS_ALLOW_PRIVATE_TARGETS</code>: allow/disallow private target checks in status routes.</li>
+            <li><code>STATUS_BROWSER_*</code> values: browser probe limits, source timeouts, and source feeds.</li>
+            <li><code>PORT</code>, <code>BIND</code>, <code>EXTERNAL_URL</code>: network/runtime settings.</li>
+            <li><code>CORS_ORIGIN</code>: CORS policy for browser integrations.</li>
+            <li><code>RETENTION_*</code>: cleanup retention and interval controls.</li>
+          </ul>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-solid fa-server" aria-hidden="true"></i> Pterodactyl and Release Automation</h2>
+          <ul>
+            <li>Pterodactyl egg: <a href="https://github.com/EuphoriaDevelopmentOrg/NitroCraft/blob/main/pterodactyl%20egg/egg-nitrocraft.json" target="_blank" rel="noopener noreferrer">egg-nitrocraft.json</a></li>
+            <li>Docker Hub workflow: <code>.github/workflows/docker-publish.yml</code></li>
+            <li>Release artifact workflow: <code>.github/workflows/build-release.yml</code></li>
+          </ul>
+          <p>Docker Hub workflow supports branch pushes, semantic version tags, schedule, and manual dispatch.</p>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-solid fa-network-wired" aria-hidden="true"></i> Reverse Proxy Example (NGINX)</h2>
+          <pre><code>server {
+  listen 443 ssl http2;
+  server_name nitrocraft.example.com;
+
+  location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}</code></pre>
+        </article>
+
+        <article class="panel">
+          <h2><i class="fa-solid fa-wrench" aria-hidden="true"></i> Validation and Troubleshooting</h2>
+          <pre><code>curl -fsS https://nitrocraft.example.com/docs
+curl -fsS https://nitrocraft.example.com/metrics
+curl -fsS "https://nitrocraft.example.com/status/server?address=example.org&amp;edition=auto"</code></pre>
+          <ul>
+            <li>If render routes fail, verify runtime has required native dependencies for <code>canvas</code>.</li>
+            <li>If status probes fail unexpectedly, check <code>STATUS_ALLOW_PRIVATE_TARGETS</code> and rate-limit settings.</li>
+            <li>If browser calls are blocked, verify <code>CORS_ORIGIN</code> and reverse proxy headers.</li>
+            <li>If Redis is unavailable, switch to memory backend and review fallback persistence settings.</li>
+          </ul>
+        </article>
+
+        <article class="panel">
+          <div class="doc-actions"><a class="text-link" href="/docs/community/nitrocraft-api.html"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> NitroCraft API</a><a class="text-link" href="/docs/community/blueprint-addons.html">Blueprint Addons <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="docs-footer"><div class="docs-footer-inner"><span>&copy; Euphoria Development</span><nav><a href="/docs/">Docs Home</a><a href="/legal/terms-and-conditions.html">Site Terms</a><a href="/legal/privacy-policy.html">Privacy Policy</a></nav></div></footer>
+</body>
+</html>
