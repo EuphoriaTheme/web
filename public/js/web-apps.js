@@ -2,6 +2,8 @@
 (() => {
   const CACHE_KEY = 'webAppsGithubRepoMetaCache:v1';
   const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+  const RELEASE_CACHE_KEY = 'webAppsGithubReleaseDownloadsCache:v1';
+  const RELEASE_CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
   function escapeHtml(input) {
     return String(input || '')
@@ -150,8 +152,31 @@
     }
   }
 
+  function loadReleaseCache() {
+    try {
+      const raw = localStorage.getItem(RELEASE_CACHE_KEY);
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return {};
+      return parsed;
+    } catch {
+      return {};
+    }
+  }
+
+  function saveReleaseCache(cache) {
+    try {
+      localStorage.setItem(RELEASE_CACHE_KEY, JSON.stringify(cache));
+    } catch {
+      // ignore storage failures (private mode, disabled storage, etc.)
+    }
+  }
+
   const cache = loadCache();
   const inFlight = new Map();
+  const releaseCache = loadReleaseCache();
+  const releaseInFlight = new Map();
+  let releasesRateLimitedUntil = 0;
 
   function getCached(repoPath) {
     const entry = cache && repoPath ? cache[repoPath] : null;
@@ -170,6 +195,240 @@
   function setMetaHidden(el, hidden) {
     if (!el) return;
     el.classList.toggle('hidden', Boolean(hidden));
+  }
+
+  function getCachedRelease(repoPath) {
+    const entry = releaseCache && repoPath ? releaseCache[repoPath] : null;
+    if (!entry || typeof entry !== 'object') return null;
+    if (!entry.ts) return null;
+    if (Date.now() - entry.ts > RELEASE_CACHE_TTL_MS) return null;
+    return entry;
+  }
+
+  function setCachedRelease(repoPath, data) {
+    if (!repoPath) return;
+    releaseCache[repoPath] = { ts: Date.now(), ...(data || {}) };
+    saveReleaseCache(releaseCache);
+  }
+
+  function normalizeRepoPath(repoPath) {
+    const parts = String(repoPath || '').trim().split('/').filter(Boolean);
+    if (parts.length < 2) return '';
+    return `${parts[0]}/${parts[1]}`;
+  }
+
+  function pickBestAsset(assets) {
+    const list = Array.isArray(assets) ? assets : [];
+    const jar = list.find(
+      (a) =>
+        a &&
+        typeof a.name === 'string' &&
+        a.browser_download_url &&
+        String(a.name).toLowerCase().endsWith('.jar'),
+    );
+    if (jar) return jar;
+
+    const zip = list.find(
+      (a) =>
+        a &&
+        typeof a.name === 'string' &&
+        a.browser_download_url &&
+        String(a.name).toLowerCase().endsWith('.zip'),
+    );
+    if (zip) return zip;
+
+    return list.find((a) => a && a.browser_download_url) || null;
+  }
+
+  function setReleaseButtonDisabled(btn, label, title) {
+    if (!btn) return;
+    btn.textContent = label || 'Download';
+    btn.removeAttribute('href');
+    btn.removeAttribute('target');
+    btn.removeAttribute('rel');
+    btn.setAttribute('aria-disabled', 'true');
+    btn.setAttribute('tabindex', '-1');
+    if (title) btn.title = title;
+
+    btn.className =
+      'inline-flex items-center justify-center px-3 py-2 rounded-lg bg-neutral-800 text-neutral-400 text-sm font-semibold border border-neutral-700 opacity-70 cursor-not-allowed';
+  }
+
+  function setReleaseButtonEnabled(btn, href, title) {
+    if (!btn) return;
+    btn.textContent = 'Download';
+    btn.href = href;
+    btn.target = '_blank';
+    btn.rel = 'noopener noreferrer';
+    btn.removeAttribute('tabindex');
+    btn.setAttribute('aria-disabled', 'false');
+    if (title) btn.title = title;
+
+    btn.className =
+      'inline-flex items-center justify-center px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-colors';
+  }
+
+  function applyReleaseDownloadState(repoPath, state) {
+    if (!repoPath) return;
+
+    const buttons = Array.from(
+      document.querySelectorAll('[data-github-release-download][data-github-release-repo]'),
+    ).filter((btn) => normalizeRepoPath(btn.getAttribute('data-github-release-repo')) === repoPath);
+
+    buttons.forEach((btn) => {
+      if (!state || typeof state !== 'object') {
+        setReleaseButtonDisabled(btn, 'Download', 'Fetching latest GitHub release...');
+        return;
+      }
+
+      if (state.kind === 'asset' && state.url) {
+        const title = state.assetName ? `Download ${state.assetName}` : 'Download from GitHub Releases';
+        setReleaseButtonEnabled(btn, state.url, title);
+        return;
+      }
+
+      if (state.kind === 'no_release') {
+        setReleaseButtonDisabled(btn, 'No Release', 'No GitHub releases found for this project.');
+        return;
+      }
+
+      if (state.kind === 'no_asset') {
+        setReleaseButtonDisabled(btn, 'No Download', 'No downloadable release assets found.');
+        return;
+      }
+
+      if (state.kind === 'rate_limited') {
+        setReleaseButtonDisabled(btn, 'Rate Limited', 'GitHub rate limit exceeded. Please try again later.');
+        return;
+      }
+
+      setReleaseButtonDisabled(btn, 'Unavailable', 'Unable to load release downloads right now.');
+    });
+  }
+
+  async function fetchLatestReleaseDownload(repoPath) {
+    if (!repoPath) throw new Error('Missing repo path');
+    if (releaseInFlight.has(repoPath)) return releaseInFlight.get(repoPath);
+
+    const p = (async () => {
+      const now = Date.now();
+      if (releasesRateLimitedUntil && now < releasesRateLimitedUntil) {
+        return { kind: 'rate_limited' };
+      }
+
+      const [owner, repo] = repoPath.split('/');
+      if (!owner || !repo) return { kind: 'error' };
+
+      async function fetchJson(url) {
+        const res = await fetch(url, {
+          headers: {
+            Accept: 'application/vnd.github+json',
+          },
+        });
+
+        if (!res.ok) {
+          const remaining = res.headers.get('x-ratelimit-remaining');
+          const reset = res.headers.get('x-ratelimit-reset');
+
+          if (res.status === 403 && remaining === '0') {
+            const resetSeconds = reset ? Number(reset) : 0;
+            if (Number.isFinite(resetSeconds) && resetSeconds > 0) {
+              releasesRateLimitedUntil = resetSeconds * 1000;
+            }
+            return { ok: false, status: res.status, rateLimited: true, json: null };
+          }
+
+          return { ok: false, status: res.status, rateLimited: false, json: null };
+        }
+
+        try {
+          return { ok: true, status: res.status, rateLimited: false, json: await res.json() };
+        } catch {
+          return { ok: false, status: res.status, rateLimited: false, json: null };
+        }
+      }
+
+      const encodedRepoPath = `${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
+
+      const latest = await fetchJson(`https://api.github.com/repos/${encodedRepoPath}/releases/latest`);
+      if (latest.ok) {
+        const best = pickBestAsset(latest.json && latest.json.assets);
+        if (best && best.browser_download_url) {
+          return { kind: 'asset', url: best.browser_download_url, assetName: best.name || '' };
+        }
+        return { kind: 'no_asset' };
+      }
+      if (latest.rateLimited) return { kind: 'rate_limited' };
+
+      if (latest.status === 404) {
+        const list = await fetchJson(`https://api.github.com/repos/${encodedRepoPath}/releases?per_page=10`);
+        if (list.rateLimited) return { kind: 'rate_limited' };
+        if (!list.ok) return { kind: 'no_release' };
+
+        const releases = Array.isArray(list.json) ? list.json : [];
+        const firstPublished = releases.find((r) => r && !r.draft);
+        if (!firstPublished) return { kind: 'no_release' };
+
+        const best = pickBestAsset(firstPublished.assets);
+        if (best && best.browser_download_url) {
+          return { kind: 'asset', url: best.browser_download_url, assetName: best.name || '' };
+        }
+        return { kind: 'no_asset' };
+      }
+
+      return { kind: 'error' };
+    })();
+
+    releaseInFlight.set(repoPath, p);
+    try {
+      const data = await p;
+      releaseInFlight.delete(repoPath);
+      return data;
+    } catch (err) {
+      releaseInFlight.delete(repoPath);
+      throw err;
+    }
+  }
+
+  async function hydrateReleaseDownloads() {
+    const buttons = Array.from(
+      document.querySelectorAll('[data-github-release-download][data-github-release-repo]'),
+    );
+    if (!buttons.length) return;
+
+    const byRepo = new Map();
+    buttons.forEach((btn) => {
+      const repoPath = normalizeRepoPath(btn.getAttribute('data-github-release-repo'));
+      if (!repoPath) return;
+      if (!byRepo.has(repoPath)) byRepo.set(repoPath, []);
+      byRepo.get(repoPath).push(btn);
+    });
+
+    byRepo.forEach((list, repoPath) => {
+      const cached = getCachedRelease(repoPath);
+      if (cached) applyReleaseDownloadState(repoPath, cached);
+      else list.forEach((btn) => setReleaseButtonDisabled(btn, 'Download', 'Fetching latest GitHub release...'));
+    });
+
+    const fetches = [];
+    byRepo.forEach((_list, repoPath) => {
+      if (getCachedRelease(repoPath)) return;
+      fetches.push(
+        fetchLatestReleaseDownload(repoPath)
+          .then((state) => {
+            const normalized = state && typeof state === 'object' ? state : { kind: 'error' };
+            setCachedRelease(repoPath, normalized);
+            applyReleaseDownloadState(repoPath, normalized);
+          })
+          .catch(() => {
+            const normalized = { kind: 'error' };
+            setCachedRelease(repoPath, normalized);
+            applyReleaseDownloadState(repoPath, normalized);
+          }),
+      );
+    });
+
+    if (fetches.length) await Promise.allSettled(fetches);
   }
 
   function renderMeta(el, meta) {
@@ -282,6 +541,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     hydrateWebApps();
+    hydrateReleaseDownloads();
     initWebAppsToggle();
   });
 })();
